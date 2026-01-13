@@ -9,9 +9,15 @@ __pycache__/
 # OS / Editor
 .DS_Store
 .vscode/
+.idea/
 
+# Node / React
 node_modules/
 uploads/
-
 dist/
+
+
+
+
+
 
