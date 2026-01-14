@@ -1,3 +1,4 @@
+//App.jsx
 import PdfUploader from "./components/PdfUploader";
 import PdfPreview from "./components/PdfPreview";
 import Controls from "./components/Controls";
