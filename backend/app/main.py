@@ -7,7 +7,6 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# ✅ CORS (THIS IS THE FIX)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
