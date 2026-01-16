@@ -17,7 +17,16 @@ export default function PdfPreview({
   setScale,
   setPageSize,
 }) {
-  if (!pdfFile) return null;
+  if (!pdfFile) {
+    return (
+      <div className="no-pdf-message">
+        <div className="no-pdf-content">
+          <span className="no-pdf-icon">📄</span>
+          <p>Upload a PDF file to get started</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -32,6 +41,7 @@ export default function PdfPreview({
           value={scale}
           onChange={(e) => setScale(Number(e.target.value))}
         />
+        <span className="zoom-value">{Math.round(scale * 100)}%</span>
       </div>
 
       {/* PDF Preview */}

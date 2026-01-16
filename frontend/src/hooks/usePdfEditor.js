@@ -1,6 +1,6 @@
 //usePdfEditor.js
-import { useState } from "react";
-import { stampPdfApi } from "../services/api";
+import { useState, useEffect } from "react";
+import { stampPdfApi, checkBackendHealth } from "../services/api";
 import { mapToPdfCoords } from "../utils/coordinateMapper";
 
 export default function usePdfEditor() {
@@ -11,9 +11,31 @@ export default function usePdfEditor() {
   const [redoStack, setRedoStack] = useState([]);
   const [scale, setScale] = useState(1);
   const [pageSize, setPageSize] = useState({ width: 1, height: 1 });
+  const [stampedPdfUrl, setStampedPdfUrl] = useState(null);
+  const [isStamping, setIsStamping] = useState(false);
+  const [error, setError] = useState(null);
+  const [backendConnected, setBackendConnected] = useState(true);
+
+  // Check backend connection on mount
+  useEffect(() => {
+    async function checkConnection() {
+      const isConnected = await checkBackendHealth();
+      setBackendConnected(isConnected);
+      if (!isConnected) {
+        setError("Backend server is not reachable. Please start the backend server.");
+      }
+    }
+    checkConnection();
+    // Check every 5 seconds
+    const interval = setInterval(checkConnection, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   function addSignature() {
-    if (!imageFile) return;
+    if (!imageFile) {
+      setError("Please upload an image file first");
+      return;
+    }
 
     const sig = {
       id: Date.now(),
@@ -26,6 +48,7 @@ export default function usePdfEditor() {
 
     setHistory([...history, signatures]);
     setSignatures([...signatures, sig]);
+    setError(null);
   }
 
   function updateSignature(id, changes) {
@@ -51,12 +74,51 @@ export default function usePdfEditor() {
   }
 
   async function stampPdf() {
-    if (!signatures.length) return;
+    if (!backendConnected) {
+      setError("Backend server is not connected. Please start the backend server.");
+      return;
+    }
+    
+    if (!pdfFile) {
+      setError("Please upload a PDF file first");
+      return;
+    }
+    if (!imageFile) {
+      setError("Please upload an image file first");
+      return;
+    }
+    if (!signatures.length) {
+      setError("Please add at least one signature");
+      return;
+    }
 
-    const sig = signatures[0];
-    const coords = mapToPdfCoords(sig, scale, pageSize);
+    setIsStamping(true);
+    setError(null);
 
-    await stampPdfApi(pdfFile, imageFile, coords);
+    try {
+      // Process all signatures
+      const sig = signatures[0]; // For now, handle first signature
+      const coords = mapToPdfCoords(sig, scale, pageSize);
+      const url = await stampPdfApi(pdfFile, imageFile, coords);
+      
+      // Clean up previous blob URL if exists
+      if (stampedPdfUrl) {
+        URL.revokeObjectURL(stampedPdfUrl);
+      }
+      
+      setStampedPdfUrl(url);
+      setBackendConnected(true); // Reset connection status on success
+    } catch (err) {
+      const errorMessage = err.message || "Failed to stamp PDF";
+      setError(errorMessage);
+      
+      // Check if it's a connection error
+      if (errorMessage.includes("Cannot connect") || errorMessage.includes("Failed to fetch")) {
+        setBackendConnected(false);
+      }
+    } finally {
+      setIsStamping(false);
+    }
   }
 
   return {
@@ -73,5 +135,9 @@ export default function usePdfEditor() {
     redo,
     stampPdf,
     setPageSize,
+    stampedPdfUrl,
+    isStamping,
+    error,
+    backendConnected,
   };
 }
