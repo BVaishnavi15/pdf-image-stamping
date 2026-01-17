@@ -2,14 +2,7 @@ import usePdfEditor from "../hooks/usePdfEditor";
 import PdfUploader from "./PdfUploader";
 import Controls from "./Controls";
 import PdfPreview from "./PdfPreview";
-import { Document, Page, pdfjs } from "react-pdf";
-import "react-pdf/dist/esm/Page/TextLayer.css";
-import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.js",
-  import.meta.url
-).toString();
+import StampedPdfPreview from "./StampedPdfPreview";
 
 export default function EditorSection() {
   const editor = usePdfEditor();
@@ -74,8 +67,11 @@ export default function EditorSection() {
                 download="signed.pdf"
                 className="download-btn"
               >
-                📥 Download Signed PDF
+                📥 Download Final PDF
               </a>
+              <p className="download-hint">
+                Download the PDF with all signature adjustments applied
+              </p>
             </div>
           )}
         </div>
@@ -94,28 +90,24 @@ export default function EditorSection() {
         <div className="stamped-pdf-section">
           <div className="section-header">
             <h2 className="section-title">Stamped PDF Preview</h2>
-            <p className="section-subtitle">Your PDF with signature applied</p>
-          </div>
-          <div className="stamped-pdf-container">
-            <Document 
-              file={editor.stampedPdfUrl} 
-              className="stamped-document"
-              loading={
-                <div className="pdf-loading">
-                  <div className="spinner"></div>
-                  <span>Loading PDF...</span>
-                </div>
-              }
-              error={
-                <div className="pdf-error">
-                  <span>⚠️</span>
-                  <p>Failed to load PDF preview</p>
-                </div>
-              }
+            <p className="section-subtitle">
+              Edit signature positions on any page. Drag and resize to adjust.
+            </p>
+            <button
+              onClick={editor.saveFinalPdf}
+              className="save-final-btn"
+              disabled={editor.isStamping}
             >
-              <Page pageNumber={1} scale={1.2} />
-            </Document>
+              {editor.isStamping ? "Saving..." : "💾 Save Final PDF"}
+            </button>
           </div>
+          <StampedPdfPreview
+            stampedPdfUrl={editor.stampedPdfUrl}
+            stampedSignatures={editor.stampedSignatures}
+            updateStampedSignature={editor.updateStampedSignature}
+            imageFile={editor.imageFile}
+            onPagesLoad={editor.handleStampedPagesLoad}
+          />
         </div>
       )}
     </section>
