@@ -11,7 +11,8 @@ export default function usePdfEditor() {
   const [redoStack, setRedoStack] = useState([]);
   const [scale, setScale] = useState(1);
   const [pageSize, setPageSize] = useState({ width: 1, height: 1 });
-  const [stampedPdfUrl, setStampedPdfUrl] = useState(null);
+  const [showStampedPreview, setShowStampedPreview] = useState(false);
+  const [finalPdfUrl, setFinalPdfUrl] = useState(null);
   const [stampedSignatures, setStampedSignatures] = useState([]);
   const [stampedNumPages, setStampedNumPages] = useState(0);
   const [stampedPageSizes, setStampedPageSizes] = useState({});
@@ -110,7 +111,7 @@ export default function usePdfEditor() {
   }
 
   async function saveFinalPdf() {
-    if (!stampedPdfUrl || !imageFile || !pdfFile) {
+    if (!imageFile || !pdfFile) {
       setError("Missing required files");
       return;
     }
@@ -125,11 +126,10 @@ export default function usePdfEditor() {
 
     try {
       // Create signatures array with per-page positions
-      const previewScale = 1.2; // Stamped preview uses 1.2 scale
       const signaturesData = stampedSignatures
         .sort((a, b) => a.page - b.page) // Sort by page number
         .map(sig => {
-          const coords = mapToPdfCoords(sig, previewScale);
+          const coords = mapToPdfCoords(sig, scale);
           return {
             ...coords,
             page: sig.page,
@@ -140,12 +140,11 @@ export default function usePdfEditor() {
       const url = await stampPdfApiWithSignatures(pdfFile, imageFile, signaturesData);
 
       // Clean up old blob URL
-      if (stampedPdfUrl && stampedPdfUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(stampedPdfUrl);
+      if (finalPdfUrl && finalPdfUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(finalPdfUrl);
       }
 
-      setStampedPdfUrl(url);
-      // Keep the signatures as they are - each page maintains its own position
+      setFinalPdfUrl(url);
     } catch (err) {
       const errorMessage = err.message || "Failed to save final PDF";
       setError(errorMessage);
@@ -187,42 +186,15 @@ export default function usePdfEditor() {
       return;
     }
 
-    setIsStamping(true);
+    // IMPORTANT: Do NOT generate stamped PDF here (it causes duplicate signatures).
+    // Instead, open the Stamped Preview editor and let user adjust per-page overlays.
     setError(null);
-
-    try {
-      // Process all signatures
-      const sig = signatures[0]; // For now, handle first signature
-      const coords = mapToPdfCoords(sig, scale, pageSize);
-      const url = await stampPdfApi(pdfFile, imageFile, coords);
-      
-      // Clean up previous blob URLs if exists
-      if (stampedPdfUrl) {
-        URL.revokeObjectURL(stampedPdfUrl);
-      }
-      // Clean up old stamped signature blob URLs
-      stampedSignatures.forEach(sig => {
-        if (sig.preview && sig.preview.startsWith('blob:')) {
-          URL.revokeObjectURL(sig.preview);
-        }
-      });
-      
-      setStampedPdfUrl(url);
-      // Don't initialize signatures here - let handleStampedPagesLoad do it
-      // This ensures we know the actual page count first
-      
-      setBackendConnected(true); // Reset connection status on success
-    } catch (err) {
-      const errorMessage = err.message || "Failed to stamp PDF";
-      setError(errorMessage);
-      
-      // Check if it's a connection error
-      if (errorMessage.includes("Cannot connect") || errorMessage.includes("Failed to fetch")) {
-        setBackendConnected(false);
-      }
-    } finally {
-      setIsStamping(false);
+    setShowStampedPreview(true);
+    // Reset final PDF when starting a new edit session
+    if (finalPdfUrl && finalPdfUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(finalPdfUrl);
     }
+    setFinalPdfUrl(null);
   }
 
   return {
@@ -239,7 +211,9 @@ export default function usePdfEditor() {
     redo,
     stampPdf,
     setPageSize,
-    stampedPdfUrl,
+    showStampedPreview,
+    setShowStampedPreview,
+    finalPdfUrl,
     stampedSignatures,
     updateStampedSignature,
     handleStampedPagesLoad,

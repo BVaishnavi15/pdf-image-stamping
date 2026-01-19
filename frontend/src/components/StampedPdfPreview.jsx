@@ -1,5 +1,5 @@
 //StampedPdfPreview.jsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import SignatureOverlay from "./SignatureOverlay";
 import "react-pdf/dist/esm/Page/TextLayer.css";
@@ -11,15 +11,15 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 export default function StampedPdfPreview({
-  stampedPdfUrl,
+  pdfFile,
   stampedSignatures,
   updateStampedSignature,
-  imageFile,
+  scale,
+  setScale,
   onPagesLoad,
 }) {
   const [numPages, setNumPages] = useState(0);
   const [pageSizes, setPageSizes] = useState({});
-  const [scale, setScale] = useState(1.2);
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
@@ -64,7 +64,7 @@ export default function StampedPdfPreview({
       {/* All PDF Pages */}
       <div className="stamped-pdf-wrapper">
         <Document
-          file={stampedPdfUrl}
+          file={pdfFile}
           onLoadSuccess={onDocumentLoadSuccess}
           loading={
             <div className="pdf-loading">

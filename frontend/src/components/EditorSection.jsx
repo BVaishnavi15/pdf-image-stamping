@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import usePdfEditor from "../hooks/usePdfEditor";
 import PdfUploader from "./PdfUploader";
 import Controls from "./Controls";
@@ -6,6 +7,14 @@ import StampedPdfPreview from "./StampedPdfPreview";
 
 export default function EditorSection() {
   const editor = usePdfEditor();
+  const stampedRef = useRef(null);
+
+  useEffect(() => {
+    if (editor.showStampedPreview) {
+      // Small delay so the section exists in DOM before scrolling
+      setTimeout(() => stampedRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+    }
+  }, [editor.showStampedPreview]);
 
   return (
     <section id="editor" className="editor-section">
@@ -60,10 +69,10 @@ export default function EditorSection() {
           </div>
 
           {/* Download Button */}
-          {editor.stampedPdfUrl && (
+          {editor.finalPdfUrl && (
             <div className="sidebar-section">
               <a
-                href={editor.stampedPdfUrl}
+                href={editor.finalPdfUrl}
                 download="signed.pdf"
                 className="download-btn"
               >
@@ -86,8 +95,8 @@ export default function EditorSection() {
       </div>
 
       {/* Stamped PDF Preview Section */}
-      {editor.stampedPdfUrl && (
-        <div className="stamped-pdf-section">
+      {editor.showStampedPreview && (
+        <div ref={stampedRef} className="stamped-pdf-section">
           <div className="section-header">
             <h2 className="section-title">Stamped PDF Preview</h2>
             <p className="section-subtitle">
@@ -102,10 +111,11 @@ export default function EditorSection() {
             </button>
           </div>
           <StampedPdfPreview
-            stampedPdfUrl={editor.stampedPdfUrl}
+            pdfFile={editor.pdfFile}
             stampedSignatures={editor.stampedSignatures}
             updateStampedSignature={editor.updateStampedSignature}
-            imageFile={editor.imageFile}
+            scale={editor.scale}
+            setScale={editor.setScale}
             onPagesLoad={editor.handleStampedPagesLoad}
           />
         </div>
