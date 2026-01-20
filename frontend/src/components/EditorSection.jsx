@@ -69,20 +69,7 @@ export default function EditorSection() {
           </div>
 
           {/* Download Button */}
-          {editor.finalPdfUrl && (
-            <div className="sidebar-section">
-              <a
-                href={editor.finalPdfUrl}
-                download="signed.pdf"
-                className="download-btn"
-              >
-                📥 Download Final PDF
-              </a>
-              <p className="download-hint">
-                Download the PDF with all signature adjustments applied
-              </p>
-            </div>
-          )}
+          {/* Download moved to bottom of Stamped Preview section */}
         </div>
 
         {/* RIGHT PREVIEW */}
@@ -102,6 +89,18 @@ export default function EditorSection() {
             <p className="section-subtitle">
               Edit signature positions on any page. Drag and resize to adjust.
             </p>
+          </div>
+          <StampedPdfPreview
+            pdfFile={editor.pdfFile}
+            stampedSignatures={editor.stampedSignatures}
+            updateStampedSignature={editor.updateStampedSignature}
+            deleteStampedSignature={editor.deleteStampedSignature}
+            scale={editor.scale}
+            setScale={editor.setScale}
+            onPagesLoad={editor.handleStampedPagesLoad}
+          />
+
+          <div className="stamped-actions">
             <button
               onClick={editor.saveFinalPdf}
               className="save-final-btn"
@@ -109,15 +108,23 @@ export default function EditorSection() {
             >
               {editor.isStamping ? "Saving..." : "💾 Save Final PDF"}
             </button>
+
+            {editor.finalPdfUrl && (
+              <a
+                href={editor.finalPdfUrl}
+                download="signed.pdf"
+                className="download-btn"
+              >
+                📥 Download Final PDF
+              </a>
+            )}
           </div>
-          <StampedPdfPreview
-            pdfFile={editor.pdfFile}
-            stampedSignatures={editor.stampedSignatures}
-            updateStampedSignature={editor.updateStampedSignature}
-            scale={editor.scale}
-            setScale={editor.setScale}
-            onPagesLoad={editor.handleStampedPagesLoad}
-          />
+
+          {editor.finalPdfUrl && (
+            <p className="download-hint">
+              Download the PDF with all signature adjustments applied
+            </p>
+          )}
         </div>
       )}
     </section>

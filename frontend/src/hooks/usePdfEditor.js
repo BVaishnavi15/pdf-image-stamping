@@ -71,6 +71,10 @@ export default function usePdfEditor() {
     );
   }
 
+  function deleteStampedSignature(id) {
+    setStampedSignatures(stampedSignatures.filter((s) => s.id !== id));
+  }
+
   function handleStampedPagesLoad(numPages) {
     setStampedNumPages(numPages);
     // Initialize signatures for all pages if not already initialized
@@ -153,19 +157,7 @@ export default function usePdfEditor() {
     }
   }
 
-  function undo() {
-    if (!history.length) return;
-    setRedoStack([signatures, ...redoStack]);
-    setSignatures(history.at(-1));
-    setHistory(history.slice(0, -1));
-  }
-
-  function redo() {
-    if (!redoStack.length) return;
-    setHistory([...history, signatures]);
-    setSignatures(redoStack[0]);
-    setRedoStack(redoStack.slice(1));
-  }
+  // Undo/Redo removed (per requirement)
 
   async function stampPdf() {
     if (!backendConnected) {
@@ -207,8 +199,6 @@ export default function usePdfEditor() {
     setImageFile,
     addSignature,
     updateSignature,
-    undo,
-    redo,
     stampPdf,
     setPageSize,
     showStampedPreview,
@@ -216,6 +206,7 @@ export default function usePdfEditor() {
     finalPdfUrl,
     stampedSignatures,
     updateStampedSignature,
+    deleteStampedSignature,
     handleStampedPagesLoad,
     saveFinalPdf,
     isStamping,

@@ -541,6 +541,30 @@ body {
   user-select: none;
 }
 
+.signature-delete {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.9);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.signature-delete:hover {
+  background: rgba(239, 68, 68, 1);
+  transform: scale(1.05);
+}
+
 /* ========== RESIZE HANDLE ========== */
 .resize-handle {
   position: absolute;
@@ -601,6 +625,37 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+/* Single PDF-like frame */
+.stamped-pdf-viewer {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(14px);
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  padding: 1.25rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  max-height: 75vh;
+  overflow: auto;
+}
+
+.stamped-page {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.stamped-page:last-child {
+  border-bottom: none;
+}
+
+.stamped-actions {
+  margin-top: 1.25rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .stamped-page-container {

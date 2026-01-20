@@ -1,7 +1,7 @@
 //SignatureOverlay.jxs
 import { useEffect, useRef, useState } from "react";
 
-export default function SignatureOverlay({ signature, onChange }) {
+export default function SignatureOverlay({ signature, onChange, onDelete, showDelete = false }) {
   const [mode, setMode] = useState(null);
   const start = useRef({});
 
@@ -50,6 +50,8 @@ export default function SignatureOverlay({ signature, onChange }) {
         height: signature.height,
       }}
       onMouseDown={(e) => {
+        // Don't start dragging when clicking delete button
+        if (e.target.closest(".signature-delete")) return;
         e.preventDefault();
         start.current = {
           x: e.clientX,
@@ -62,6 +64,20 @@ export default function SignatureOverlay({ signature, onChange }) {
         setMode("drag");
       }}
     >
+      {showDelete && (
+        <button
+          type="button"
+          className="signature-delete"
+          title="Delete this signature"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete?.(signature.id);
+          }}
+        >
+          ✕
+        </button>
+      )}
       <img src={signature.preview} alt="signature" />
 
       <div

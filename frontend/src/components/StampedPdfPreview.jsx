@@ -14,6 +14,7 @@ export default function StampedPdfPreview({
   pdfFile,
   stampedSignatures,
   updateStampedSignature,
+  deleteStampedSignature,
   scale,
   setScale,
   onPagesLoad,
@@ -61,8 +62,8 @@ export default function StampedPdfPreview({
         <span className="zoom-value">{Math.round(scale * 100)}%</span>
       </div>
 
-      {/* All PDF Pages */}
-      <div className="stamped-pdf-wrapper">
+      {/* All PDF Pages - single scroll frame */}
+      <div className="stamped-pdf-viewer">
         <Document
           file={pdfFile}
           onLoadSuccess={onDocumentLoadSuccess}
@@ -79,11 +80,13 @@ export default function StampedPdfPreview({
             </div>
           }
         >
-          {numPages > 0 && Array.from({ length: numPages }, (_, i) => i + 1).map((pageNum) => (
-            <div key={pageNum} className="stamped-page-container">
-              <div className="stamped-page-label">Page {pageNum}</div>
-              <div className="stamped-pdf-container">
-                <div className="pdf-container" style={{ position: "relative", display: "inline-block" }}>
+          {numPages > 0 &&
+            Array.from({ length: numPages }, (_, i) => i + 1).map((pageNum) => (
+              <div key={pageNum} className="stamped-page">
+                <div
+                  className="pdf-container"
+                  style={{ position: "relative", display: "inline-block" }}
+                >
                   <Page
                     pageNumber={pageNum}
                     scale={scale}
@@ -107,14 +110,15 @@ export default function StampedPdfPreview({
                           key={sig.id}
                           signature={sig}
                           onChange={updateStampedSignature}
+                          onDelete={deleteStampedSignature}
+                          showDelete
                         />
                       ))}
                     </div>
                   )}
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </Document>
       </div>
     </>
