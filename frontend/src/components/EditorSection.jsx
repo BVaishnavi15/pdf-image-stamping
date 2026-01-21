@@ -67,11 +67,8 @@ export default function EditorSection() {
               </div>
             )}
           </div>
-
-          {/* Download Button */}
-          {/* Download moved to bottom of Stamped Preview section */}
         </div>
-
+        
         {/* RIGHT PREVIEW */}
         <div className="editor-preview">
           <div className="preview-section">

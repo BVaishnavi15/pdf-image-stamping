@@ -1,4 +1,3 @@
-//StampedPdfPreview.jsx
 import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import SignatureOverlay from "./SignatureOverlay";

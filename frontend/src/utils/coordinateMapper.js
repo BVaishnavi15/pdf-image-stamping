@@ -1,4 +1,3 @@
-//coordinateMapper.js
 export function mapToPdfCoords(sig, scale) {
   return {
     x: sig.x / scale,

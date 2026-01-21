@@ -1,4 +1,3 @@
-//PdfUploader.jsx
 export default function PdfUploader({ setPdfFile, setImageFile }) {
   return (
     <div className="uploader">

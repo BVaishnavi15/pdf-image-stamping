@@ -1,4 +1,3 @@
-//SignatureOverlay.jxs
 import { useEffect, useRef, useState } from "react";
 
 export default function SignatureOverlay({ signature, onChange, onDelete, showDelete = false }) {

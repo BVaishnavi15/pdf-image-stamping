@@ -1,6 +1,4 @@
-//api.js
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-
 // Health check function
 export async function checkBackendHealth() {
   try {
@@ -43,7 +41,7 @@ export async function stampPdfApi(pdf, image, coords) {
 
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
-    return url; // Return URL instead of opening new window
+    return url; 
   } catch (error) {
     console.error("Fetch error details:", {
       message: error.message,

@@ -1,4 +1,3 @@
-//usePdfEditor.js
 import { useState, useEffect } from "react";
 import { stampPdfApi, stampPdfApiWithSignatures, checkBackendHealth } from "../services/api";
 import { mapToPdfCoords } from "../utils/coordinateMapper";
@@ -156,8 +155,6 @@ export default function usePdfEditor() {
       setIsStamping(false);
     }
   }
-
-  // Undo/Redo removed (per requirement)
 
   async function stampPdf() {
     if (!backendConnected) {

@@ -1,4 +1,3 @@
-//App.jsx
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import EditorSection from "./components/EditorSection";

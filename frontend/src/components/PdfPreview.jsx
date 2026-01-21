@@ -1,4 +1,3 @@
-//PdfPreview.jsx
 import { Document, Page, pdfjs } from "react-pdf";
 import SignatureOverlay from "./SignatureOverlay";
 import "react-pdf/dist/esm/Page/TextLayer.css";

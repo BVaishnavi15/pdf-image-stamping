@@ -1,4 +1,3 @@
-//Controls.jsx
 export default function Controls({
   addSignature,
   stampPdf,

@@ -56,7 +56,7 @@ def stamp_image_on_pdf_multi(
     
     # Stamp each page with its specific signature positions
     for page_num in range(1, len(doc) + 1):
-        page = doc[page_num - 1]  # Convert to 0-indexed
+        page = doc[page_num - 1]  
         
         # If this page has specific signatures, use them; otherwise skip
         if page_num in signatures_by_page:
